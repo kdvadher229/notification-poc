@@ -1,39 +1,53 @@
-import { useEffect, useState } from "react";
-import { getFCMToken, messaging, onMessage } from "./config/firebase";
-
+import { useState, useEffect } from "react";
+import reactLogo from "./assets/react.svg";
+import viteLogo from "/vite.svg";
+import "./App.css";
+import { sendNotification, subscribeUser } from "./subscribePush";
+import Notification from "./Notification";
 function App() {
-  const [token, setToken] = useState("");
-  onMessage(messaging, (payload) => {
-    console.log("Foreground Notification Received:", payload);
-    const { title, body } = payload.notification || {};
+  const [count, setCount] = useState(0);
+  const [notifications, setNotifications] = useState<{ title: string }[]>([]);
 
-    // Show native browser notification
-    new Notification(title || "New Notification", { body });
-  });
   useEffect(() => {
-    const getToken = async () => {
-      const permission = await Notification.requestPermission();
-      if (permission === "granted") {
-        const token = await getFCMToken();
-        if (token) {
-          setToken(token);
-          console.log(token);
-        }
-      }
+    subscribeUser();
+    const broadcast = new BroadcastChannel("notification-channel");
+    broadcast.onmessage = (event) => {
+      setNotifications((prevNotifications) => [
+        ...prevNotifications,
+        event.data,
+      ]);
     };
 
-    getToken();
+    return () => {
+      broadcast.close();
+    };
   }, []);
 
   return (
-    <div className="App">
-      <h1>Push Notification with React & FCM</h1>
-      <p>
-        Device Token 👉 <span style={{ fontSize: "11px" }}> {token} </span>
+    <>
+      <div>
+        <a href="https://vite.dev" target="_blank">
+          <img src={viteLogo} className="logo" alt="Vite logo" />
+        </a>
+        <a href="https://react.dev" target="_blank">
+          <img src={reactLogo} className="logo react" alt="React logo" />
+        </a>
+      </div>
+      <h1>Vite + React</h1>
+      <div className="card">
+        <button onClick={() => setCount((count) => count + 1)}>
+          count is {count}
+        </button>
+        <p>
+          Edit <code>src/App.tsx</code> and save to test HMR
+        </p>
+      </div>
+      <p className="read-the-docs">
+        Click on the Vite and React logos to learn more
       </p>
-      {token && <h2>Notification permission enabled 👍🏻</h2>}
-      {!token && <h2>Need notification permission ❗️ </h2>}
-    </div>
+      <button onClick={sendNotification}>Send Notification</button>
+      <Notification notifications={notifications} />
+    </>
   );
 }
 
