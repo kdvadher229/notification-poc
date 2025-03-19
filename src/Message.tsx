@@ -1,13 +1,16 @@
 import React from "react";
 
-interface NotificationProps {
-  title: string;
+interface MessageProps {
+  messages: { title: string }[];
 }
-
-const Message: React.FC<NotificationProps> = ({ title }) => {
+const Message: React.FC<MessageProps> = ({ messages }) => {
   return (
-    <div className="notification">
-      <h2>{title}</h2>
+    <div className="messages">
+      {messages.map((message, index) => (
+        <div key={index} className="message">
+          <h2>{message.title}</h2>
+        </div>
+      ))}
     </div>
   );
 };
