@@ -19,21 +19,15 @@ function App() {
         
         // Generate a unique ID for this notification
         const id = Date.now().toString();
-        
-        
-        
+                
         // Show native browser notification if permission granted
         if (Notification.permission === "granted") {
-          if(title !== 'Active Check'){
             // Add to UI messages - only in the tab that received the notification
             setMessages(prevMessages => [...prevMessages, { title, body, id }]);  
             new Notification(title, { body });
             const broadcast = new BroadcastChannel("notification-channel");
             broadcast.postMessage({ title, body, id, fromBroadcast: true });
-          }
-        }
-        
-       
+        }       
       });
       
       // Clean up listener on unmount
