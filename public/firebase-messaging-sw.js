@@ -7,8 +7,14 @@ importScripts(
 
 (async function () {
   try {
-    const response = await fetch("http://localhost:3000/config");
-    const firebaseConfig = await response.json();
+    const firebaseConfig = {
+      apiKey: "AIzaSyDkOmaXniWJSF2bEOoRypWPrUF-d9pMkLA",
+      authDomain: "ops-notification-f21da.firebaseapp.com",
+      projectId: "ops-notification-f21da",
+      storageBucket: "ops-notification-f21da.firebasestorage.app",
+      messagingSenderId: "223927492708",
+      appId: "1:223927492708:web:a5702645fa95ce31a8bf71"
+    };
 
     firebase.initializeApp(firebaseConfig);
     const messaging = firebase.messaging();
